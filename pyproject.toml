@@ -1,0 +1,59 @@
+[tool.poetry]
+name = "poetry-monoranger-plugin"
+version = "0.1.0"
+description = ""
+authors = ["Andreas Georgiou <andreas.x.georgiou@gsk.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+poetry = ">=1.8.0,<1.9.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.4"
+mypy = "^1.11.2"
+pre-commit = "^3.8.0"
+pre-commit-hooks = "^4.6.0"
+
+[tool.poetry.group.ci]
+optional = true
+
+[tool.poetry.group.ci.dependencies]
+pytest-azurepipelines = "~1.0.4"
+
+[tool.poetry.scripts]
+databricks-submit = 'optumus_prime.submit.submit:main'
+databricks-tests = 'optumus_prime.submit.run_tests:main'
+
+[tool.mypy]
+disable_error_code = "import-untyped"
+check_untyped_defs = true
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+
+[tool.ruff.lint]
+extend-select = ["I", "D"]
+# Disabled rules:
+# `D104`: requires documentation in __init__.py of public packages
+# `D105`: requires documentation for magic methods
+# `D107`: requires documentation for __init__ of a class.
+# `D205`: requires that there is a line between summary line and the rest. This forces the summary line to be 1 line
+# `D417`: requires documentation for every function parameter.
+# `D415`: requires that the first line should end in a question mark or exclamation point
+ignore = ["D104", "D105", "D107", "D205", "D417", "D415"]
+ignore-init-module-imports = true
+
+[tool.ruff.lint.extend-per-file-ignores]
+"tests/*" = ["D100", "D103"] # Disable requirement for docstrings in unit tests
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.poetry.plugins."poetry.application.plugin"]
+monoranger = "poetry_monoranger_plugin.plugin:Monoranger"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
