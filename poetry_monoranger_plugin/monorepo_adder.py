@@ -54,8 +54,8 @@ class MonorepoAdderRemover:
     monorepo setups, including handling the shared lock file and rolling back changes if needed.
 
     Under normal circumstances, the add/remove commands modify the per-project lockfile, and if it
-    was modified successfully, *only then* the pyproject.toml file is updated. This allows the
-    pyproject.toml to a good state in case the lockfile generation/dependency resolution fails.
+    was modified successfully, *only then* the pyproject.toml file is updated. This leaves the
+    pyproject.toml in a good state in case the lockfile generation/dependency resolution fails.
     
     However, in a monorepo setup, we want to maintain a single lockfile for all the projects in the
     monorepo. This means that the add/remove commands should not generate a per-project lockfile.The 
