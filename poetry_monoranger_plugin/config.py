@@ -1,4 +1,7 @@
-"""This module defines the configuration class for the Monoranger plugin."""
+"""Copyright (C) 2024 GlaxoSmithKline plc
+
+This module defines the configuration class for the Monoranger plugin.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass

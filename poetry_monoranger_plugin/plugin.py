@@ -1,3 +1,8 @@
+"""Copyright (C) 2024 GlaxoSmithKline plc
+
+This module is the entry point for the monoranger plugin. It defines the Monoranger class,
+which is an *application* plugin for Poetry.
+"""
 from __future__ import annotations
 
 import copy

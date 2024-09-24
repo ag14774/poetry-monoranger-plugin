@@ -1,4 +1,6 @@
-"""This module defines the LockModifier class, which modifies the behavior of certain Poetry commands
+"""Copyright (C) 2024 GlaxoSmithKline plc
+
+This module defines the LockModifier class, which modifies the behavior of certain Poetry commands
 (`lock`, `install`, `update`) to support monorepo setups. It ensures these commands behave as if they
 were run from the monorepo root directory, maintaining a shared lockfile.
 """

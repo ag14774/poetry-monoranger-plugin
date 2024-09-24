@@ -1,4 +1,7 @@
-"""This module defines classes and methods to modify the behavior of Poetry's add and remove commands for monorepo support."""
+"""Copyright (C) 2024 GlaxoSmithKline plc
+
+This module defines classes and methods to modify the behavior of Poetry's add and remove commands for monorepo support.
+"""
 from __future__ import annotations
 
 import copy

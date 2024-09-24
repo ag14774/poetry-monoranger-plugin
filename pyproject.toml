@@ -21,10 +21,6 @@ optional = true
 [tool.poetry.group.ci.dependencies]
 pytest-azurepipelines = "~1.0.4"
 
-[tool.poetry.scripts]
-databricks-submit = 'optumus_prime.submit.submit:main'
-databricks-tests = 'optumus_prime.submit.run_tests:main'
-
 [tool.mypy]
 disable_error_code = "import-untyped"
 check_untyped_defs = true

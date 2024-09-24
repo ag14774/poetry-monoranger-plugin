@@ -1,3 +1,8 @@
+"""Copyright (C) 2024 GlaxoSmithKline plc
+
+This module defines the PathRewriter class, which modifies the behavior of the Poetry build command to
+rewrite directory dependencies to their pinned versions.
+"""
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast

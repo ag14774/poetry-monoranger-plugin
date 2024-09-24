@@ -1,4 +1,6 @@
-"""This module contains the VenvModifier class, which modifies the virtual environment (venv) for a Poetry
+"""Copyright (C) 2024 GlaxoSmithKline plc
+
+This module contains the VenvModifier class, which modifies the virtual environment (venv) for a Poetry
 command. It ensures that the shared virtual environment of the monorepo root is activated for
 commands that require an environment such as `poetry shell` and `poetry run`.
 """
