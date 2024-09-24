@@ -2,7 +2,7 @@
 
 [![Python package](https://github.com/ag14774/poetry_monoranger_plugin/actions/workflows/python-tests.yml/badge.svg)](https://github.com/ag14774/poetry_monoranger_plugin/actions/workflows/python-tests.yml)
 
-Monoranger is a plugin for [Poetry](https://python-poetry.org/) that helps you manage your monorepo.
+**Monoranger** is a plugin for [Poetry](https://python-poetry.org/) that helps you manage your monorepo.
 
 **Main Features**:
 - Shared `poetry.lock` file across multiple projects in a monorepo
@@ -33,17 +33,17 @@ monorepo/
 
 The root `pyproject.toml` file should include all projects as a path dependency:
 ```toml
-...
+# ...
 [tool.poetry.dependencies]
 python = "^3.9"
 library-one = { path = "library-one", develop = true }
 library-two = { path = "library-two", develop = true }
-...
+# ...
 ```
 
 Each project's `pyproject.toml` file should include the dependencies it needs (including path dependencies to other projects) as well as enabling the plugin:
 ```toml
-...
+# ...
 [tool.poetry.dependencies]
 python = "^3.9"
 numpy = "^1.21.0"
@@ -53,9 +53,9 @@ library-two = { path = "../library-two", develop = true }
 enabled = true
 monorepo-root = "../"
 version-rewrite-rule = '=='  # Choose between "==", "~", "^", ">=,<"
-...
+# ...
 ```
-The plugin by default is disabled in order to avoid having undesired consequences to other projects (as plugins are installed globally). To enable it, set `enabled = true` in each project's `pyproject.toml` file.
+The plugin by default is disabled in order to avoid having undesired consequences on other projects (as plugins are installed globally). To enable it, set `enabled = true` in each project's `pyproject.toml` file.
 
 ### Commands
 The plugin modifies the following commands:
