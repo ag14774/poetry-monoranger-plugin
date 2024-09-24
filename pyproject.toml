@@ -14,12 +14,7 @@ ruff = "^0.6.4"
 mypy = "^1.11.2"
 pre-commit = "^3.8.0"
 pre-commit-hooks = "^4.6.0"
-
-[tool.poetry.group.ci]
-optional = true
-
-[tool.poetry.group.ci.dependencies]
-pytest-azurepipelines = "~1.0.4"
+pytest = "^8.3.3"
 
 [tool.mypy]
 disable_error_code = "import-untyped"
