@@ -34,7 +34,6 @@ extend-select = ["I", "D"]
 # `D417`: requires documentation for every function parameter.
 # `D415`: requires that the first line should end in a question mark or exclamation point
 ignore = ["D104", "D105", "D107", "D205", "D417", "D415"]
-ignore-init-module-imports = true
 
 [tool.ruff.lint.extend-per-file-ignores]
 "tests/*" = ["D100", "D103"] # Disable requirement for docstrings in unit tests

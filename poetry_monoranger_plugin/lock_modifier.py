@@ -4,6 +4,7 @@ This module defines the LockModifier class, which modifies the behavior of certa
 (`lock`, `install`, `update`) to support monorepo setups. It ensures these commands behave as if they
 were run from the monorepo root directory, maintaining a shared lockfile.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -20,13 +21,13 @@ if TYPE_CHECKING:
     from poetry_monoranger_plugin.config import MonorangerConfig
 
 
-
 class LockModifier:
     """Modifies Poetry commands (`lock`, `install`, `update`) for monorepo support.
 
     Ensures these commands behave as if they were run from the monorepo root directory
     even when run from a subdirectory, thus maintaining a shared lockfile.
     """
+
     def __init__(self, plugin_conf: MonorangerConfig):
         self.plugin_conf = plugin_conf
 
@@ -41,15 +42,16 @@ class LockModifier:
             event (ConsoleCommandEvent): The triggering event.
         """
         command = event.command
-        assert isinstance(command, (LockCommand, InstallCommand, UpdateCommand)), \
-            f"{self.__class__.__name__} can only be used for `poetry lock`, `poetry install`, and `poetry update` commands"
+        assert isinstance(
+            command, (LockCommand, InstallCommand, UpdateCommand)
+        ), f"{self.__class__.__name__} can only be used for `poetry lock`, `poetry install`, and `poetry update` commands"
 
         io = event.io
         io.write_line("<info>Running command from monorepo root directory</info>")
 
         monorepo_root = (command.poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
         monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io)
-        
+
         installer = Installer(
             io,
             command.env,
@@ -59,6 +61,6 @@ class LockModifier:
             monorepo_root_poetry.config,
             disable_cache=monorepo_root_poetry.disable_cache,
         )
-        
+
         command.set_poetry(monorepo_root_poetry)
         command.set_installer(installer)

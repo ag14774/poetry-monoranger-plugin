@@ -3,6 +3,7 @@
 This module defines the PathRewriter class, which modifies the behavior of the Poetry build command to
 rewrite directory dependencies to their pinned versions.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
@@ -23,6 +24,7 @@ if TYPE_CHECKING:
 
 class PathRewriter:
     """A class to handle the rewriting of directory dependencies in a Poetry project."""
+
     def __init__(self, plugin_conf: MonorangerConfig):
         self.plugin_conf: MonorangerConfig = plugin_conf
 
@@ -33,22 +35,23 @@ class PathRewriter:
             event (ConsoleCommandEvent): The triggering event.
         """
         command = event.command
-        assert isinstance(command, BuildCommand), \
-            f"{self.__class__.__name__} can only be used with the `poetry build` command"
+        assert isinstance(
+            command, BuildCommand
+        ), f"{self.__class__.__name__} can only be used with the `poetry build` command"
 
         io = event.io
         poetry = command.poetry
 
         main_deps_group = poetry.package.dependency_group(MAIN_GROUP)
         directory_deps = [dep for dep in main_deps_group.dependencies if isinstance(dep, DirectoryDependency)]
-        
+
         for dependency in directory_deps:
             try:
                 pinned = self._pin_dependency(poetry, dependency)
             except (RuntimeError, ValueError) as e:
                 io.write_line(f"<fg=yellow>Could not pin dependency {dependency.name}: {str(e)}</>")
                 continue
-                
+
             main_deps_group.remove_dependency(dependency.name)
             main_deps_group.add_dependency(pinned)
 
@@ -67,17 +70,17 @@ class PathRewriter:
             ValueError: If the version rewrite rule is invalid.
         """
         pyproject_file = poetry.pyproject_path.parent / dependency.path / "pyproject.toml"
-        
+
         if not pyproject_file.exists():
             raise RuntimeError(f"Could not find pyproject.toml in {dependency.path}")
-        
+
         dep_pyproject: PyProjectTOML = PyProjectTOML(pyproject_file)
-        
+
         if not dep_pyproject.is_poetry_project():
             raise RuntimeError(f"Directory {dependency.path} is not a valid poetry project")
 
         name = cast(str, dep_pyproject.poetry_config["name"])
-        version = cast(str, dep_pyproject.poetry_config["version"])            
+        version = cast(str, dep_pyproject.poetry_config["version"])
         if self.plugin_conf.version_rewrite_rule in ["~", "^"]:
             pinned_version = f"{self.plugin_conf.version_rewrite_rule}{version}"
         elif self.plugin_conf.version_rewrite_rule == "==":
@@ -88,5 +91,5 @@ class PathRewriter:
             pinned_version = f">={version},<{next_patch_version}"
         else:
             raise ValueError(f"Invalid version rewrite rule: {self.plugin_conf.version_rewrite_rule}")
-    
+
         return Dependency(name, pinned_version, groups=dependency.groups)

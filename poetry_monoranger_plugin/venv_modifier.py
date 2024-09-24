@@ -4,6 +4,7 @@ This module contains the VenvModifier class, which modifies the virtual environm
 command. It ensures that the shared virtual environment of the monorepo root is activated for
 commands that require an environment such as `poetry shell` and `poetry run`.
 """
+
 from __future__ import annotations
 
 import os
@@ -27,9 +28,10 @@ class VenvModifier:
 
     This class ensures that the appropriate virtual environment is activated for commands that require an environment.
     It prevents the activation of the per-project environments and forces the activation of the monorepo root venv.
-    If another venv is already activated, it does not activate any other venv to maintain consistency with Poetry's 
+    If another venv is already activated, it does not activate any other venv to maintain consistency with Poetry's
     behavior.
     """
+
     def __init__(self, plugin_conf: MonorangerConfig):
         self.plugin_conf: MonorangerConfig = plugin_conf
 
@@ -43,9 +45,10 @@ class VenvModifier:
             event (ConsoleCommandEvent): The triggering event.
         """
         command = event.command
-        assert isinstance(command, EnvCommand) and not isinstance(command, SelfCommand), \
-            f"{self.__class__.__name__} can only be used for commands that require an environment (except `poetry self`)"
-        
+        assert isinstance(command, EnvCommand) and not isinstance(
+            command, SelfCommand
+        ), f"{self.__class__.__name__} can only be used for commands that require an environment (except `poetry self`)"
+
         # We don't want to activate the monorepo root venv if we are already inside a venv
         # in order to be consistent with poetry's current behavior.
         # Check if we are inside a virtualenv or not
@@ -58,10 +61,10 @@ class VenvModifier:
         in_venv = env_prefix is not None and conda_env_name != "base"
         if in_venv:
             return
-        
+
         io = event.io
         poetry = command.poetry
-        
+
         monorepo_root = (poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
         monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io)
 
@@ -72,7 +75,7 @@ class VenvModifier:
 
         if not isinstance(command, InstallerCommand):
             return
-        
+
         # Update installer for commands that require an installer
         installer = Installer(
             io,
