@@ -14,12 +14,7 @@ ruff = "^0.6.4"
 mypy = "^1.11.2"
 pre-commit = "^3.8.0"
 pre-commit-hooks = "^4.6.0"
-
-[tool.poetry.group.ci]
-optional = true
-
-[tool.poetry.group.ci.dependencies]
-pytest-azurepipelines = "~1.0.4"
+pytest = "^8.3.3"
 
 [tool.mypy]
 disable_error_code = "import-untyped"
@@ -39,7 +34,6 @@ extend-select = ["I", "D"]
 # `D417`: requires documentation for every function parameter.
 # `D415`: requires that the first line should end in a question mark or exclamation point
 ignore = ["D104", "D105", "D107", "D205", "D417", "D415"]
-ignore-init-module-imports = true
 
 [tool.ruff.lint.extend-per-file-ignores]
 "tests/*" = ["D100", "D103"] # Disable requirement for docstrings in unit tests

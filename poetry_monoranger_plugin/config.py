@@ -2,6 +2,7 @@
 
 This module defines the configuration class for the Monoranger plugin.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -17,9 +18,10 @@ class MonorangerConfig:
         monorepo_root (str): Path to the root of the monorepo. Defaults to "../".
         version_rewrite_rule (Literal['==', '~', '^', '>=,<']): Rule for version rewriting. Defaults to "^".
     """
+
     enabled: bool = False
     monorepo_root: str = "../"
-    version_rewrite_rule: Literal['==', '~', '^', '>=,<'] = "^"
+    version_rewrite_rule: Literal["==", "~", "^", ">=,<"] = "^"
 
     @classmethod
     def from_dict(cls, d: dict[str, Any]):
