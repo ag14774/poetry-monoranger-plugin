@@ -55,6 +55,19 @@ class PathRewriter:
             main_deps_group.remove_dependency(dependency.name)
             main_deps_group.add_dependency(pinned)
 
+    def _get_dependency_pyproject(self, poetry: Poetry, dependency: DirectoryDependency) -> PyProjectTOML:
+        pyproject_file = poetry.pyproject_path.parent / dependency.path / "pyproject.toml"
+
+        if not pyproject_file.exists():
+            raise RuntimeError(f"Could not find pyproject.toml in {dependency.path}")
+
+        dep_pyproject: PyProjectTOML = PyProjectTOML(pyproject_file)
+
+        if not dep_pyproject.is_poetry_project():
+            raise RuntimeError(f"Directory {dependency.path} is not a valid poetry project")
+
+        return dep_pyproject
+
     def _pin_dependency(self, poetry: Poetry, dependency: DirectoryDependency):
         """Pins a directory dependency to a specific version based on the plugin configuration.
 
@@ -69,15 +82,7 @@ class PathRewriter:
             RuntimeError: If the pyproject.toml file is not found or is not a valid Poetry project.
             ValueError: If the version rewrite rule is invalid.
         """
-        pyproject_file = poetry.pyproject_path.parent / dependency.path / "pyproject.toml"
-
-        if not pyproject_file.exists():
-            raise RuntimeError(f"Could not find pyproject.toml in {dependency.path}")
-
-        dep_pyproject: PyProjectTOML = PyProjectTOML(pyproject_file)
-
-        if not dep_pyproject.is_poetry_project():
-            raise RuntimeError(f"Directory {dependency.path} is not a valid poetry project")
+        dep_pyproject: PyProjectTOML = self._get_dependency_pyproject(poetry, dependency)
 
         name = cast(str, dep_pyproject.poetry_config["name"])
         version = cast(str, dep_pyproject.poetry_config["version"])
