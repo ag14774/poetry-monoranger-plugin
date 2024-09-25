@@ -50,7 +50,9 @@ class LockModifier:
         io.write_line("<info>Running command from monorepo root directory</info>")
 
         monorepo_root = (command.poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
-        monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io)
+        monorepo_root_poetry = Factory().create_poetry(
+            cwd=monorepo_root, io=io, disable_cache=command.poetry.disable_cache
+        )
 
         installer = Installer(
             io,

@@ -66,7 +66,7 @@ class VenvModifier:
         poetry = command.poetry
 
         monorepo_root = (poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
-        monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io)
+        monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io, disable_cache=poetry.disable_cache)
 
         io.write_line(f"<info>Using monorepo root venv <fg=green>{monorepo_root.name}</></info>\n")
         env_manager = EnvManager(monorepo_root_poetry, io=io)
