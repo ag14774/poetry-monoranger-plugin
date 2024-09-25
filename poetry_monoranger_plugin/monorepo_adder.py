@@ -126,7 +126,7 @@ class MonorepoAdderRemover:
             return
 
         monorepo_root = (poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
-        monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io)
+        monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io, disable_cache=poetry.disable_cache)
 
         installer = Installer(
             io,
