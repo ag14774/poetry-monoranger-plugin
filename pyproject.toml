@@ -16,6 +16,12 @@ pre-commit = "^3.8.0"
 pre-commit-hooks = "^4.6.0"
 pytest = "^8.3.3"
 
+[tool.poetry.group.ci]
+optional = true
+
+[tool.poetry.group.ci.dependencies]
+pytest-github-actions-annotate-failures = "^0.2.0"
+
 [tool.mypy]
 disable_error_code = "import-untyped"
 check_untyped_defs = true
@@ -25,7 +31,19 @@ line-length = 120
 target-version = "py39"
 
 [tool.ruff.lint]
-extend-select = ["I", "D"]
+extend-select = [
+    "B",   # flake8-bugbear
+    "C4",  # fkale8-comprehensions
+    "D",   # pydocstyle
+    "I",   # isort
+    "N",   # pep8-naming
+    "PIE", # fkale8-pie
+    "PGH", # pygrep-hooks
+    "RUF", # ruff checks
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "UP",  # pyupgrade
+]
 # Disabled rules:
 # `D104`: requires documentation in __init__.py of public packages
 # `D105`: requires documentation for magic methods

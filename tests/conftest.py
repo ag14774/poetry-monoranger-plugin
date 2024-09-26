@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Type
 from unittest.mock import Mock
 
 import pytest
@@ -13,7 +12,7 @@ from poetry.poetry import Poetry
 def mock_event_gen():
     from poetry.console.commands.command import Command
 
-    def _factory(command_cls: Type[Command], disable_cache: bool):
+    def _factory(command_cls: type[Command], disable_cache: bool):
         from cleo.events.console_command_event import ConsoleCommandEvent
 
         main_grp = DependencyGroup("main")
@@ -48,7 +47,7 @@ def mock_event_gen():
 def mock_terminate_event_gen(mock_event_gen):
     from poetry.console.commands.command import Command
 
-    def _factory(command_cls: Type[Command], disable_cache: bool):
+    def _factory(command_cls: type[Command], disable_cache: bool):
         from cleo.events.console_terminate_event import ConsoleTerminateEvent
 
         mock_event = mock_event_gen(command_cls, disable_cache)

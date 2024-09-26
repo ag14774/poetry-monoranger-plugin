@@ -8,16 +8,16 @@ from __future__ import annotations
 import copy
 from typing import TYPE_CHECKING
 
-from cleo.events.console_terminate_event import ConsoleTerminateEvent
 from poetry.console.commands.add import AddCommand
 from poetry.console.commands.remove import RemoveCommand
 from poetry.factory import Factory
 from poetry.installation.installer import Installer
 from poetry.poetry import Poetry
+from tomlkit.toml_document import TOMLDocument
 
 if TYPE_CHECKING:
     from cleo.events.console_command_event import ConsoleCommandEvent
-    from tomlkit.toml_document import TOMLDocument
+    from cleo.events.console_terminate_event import ConsoleTerminateEvent
 
     from poetry_monoranger_plugin.config import MonorangerConfig
 

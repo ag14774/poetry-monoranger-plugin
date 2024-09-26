@@ -33,7 +33,7 @@ def test_executes_modifications_for_env_command(mock_event_gen, disable_cache: b
 
         # create_poetry is called with the correct args
         mock_create_poetry.assert_called_once()
-        assert mock_create_poetry.call_args[1]["cwd"] == Path("/monorepo_root")
+        assert mock_create_poetry.call_args[1]["cwd"] == Path("/monorepo_root").resolve()
         assert mock_create_poetry.call_args[1]["io"] == mock_event.io
         assert mock_create_poetry.call_args[1]["disable_cache"] == disable_cache
 

@@ -7,7 +7,7 @@ which is an *application* plugin for Poetry.
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Any
 
 import cleo.events.console_events
 from cleo.events.console_command_event import ConsoleCommandEvent
@@ -25,6 +25,8 @@ from poetry.plugins.application_plugin import ApplicationPlugin
 from poetry_monoranger_plugin.config import MonorangerConfig
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from cleo.events.event import Event
     from cleo.events.event_dispatcher import EventDispatcher
     from poetry.console.application import Application
@@ -52,8 +54,8 @@ class Monoranger(ApplicationPlugin):
     def __init__(self):
         super().__init__()
 
-        self.poetry: Poetry = None  # type: ignore
-        self.plugin_conf: MonorangerConfig = None  # type: ignore
+        self.poetry: Poetry = None  # type: ignore[assignment]
+        self.plugin_conf: MonorangerConfig = None  # type: ignore[assignment]
         self.ctx: dict[type[PoetryCommand], Any] = {}
 
     def activate(self, application: Application):
@@ -105,9 +107,8 @@ class Monoranger(ApplicationPlugin):
             from poetry_monoranger_plugin.lock_modifier import LockModifier
 
             # NOTE: consider moving this to a separate UpdateModifier class
-            if isinstance(command, UpdateCommand):
-                if not event.io.input._arguments.get("packages", None):
-                    event.io.input._arguments["packages"] = [command.poetry.package.name]
+            if isinstance(command, UpdateCommand) and not event.io.input._arguments.get("packages", None):
+                event.io.input._arguments["packages"] = [command.poetry.package.name]
             LockModifier(self.plugin_conf).execute(event)
 
         if isinstance(command, (AddCommand, RemoveCommand)):
