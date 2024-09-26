@@ -49,7 +49,7 @@ class PathRewriter:
             try:
                 pinned = self._pin_dependency(poetry, dependency)
             except (RuntimeError, ValueError) as e:
-                io.write_line(f"<fg=yellow>Could not pin dependency {dependency.name}: {str(e)}</>")
+                io.write_line(f"<fg=yellow>Could not pin dependency {dependency.name}: {e!s}</>")
                 continue
 
             main_deps_group.remove_dependency(dependency.name)
