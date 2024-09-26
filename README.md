@@ -1,6 +1,6 @@
 # Poetry Monoranger Plugin
 
-[![Python package](https://github.com/ag14774/poetry_monoranger_plugin/actions/workflows/python-tests.yml/badge.svg)](https://github.com/ag14774/poetry_monoranger_plugin/actions/workflows/main.yml)
+[![Tests](https://github.com/ag14774/poetry-monoranger-plugin/actions/workflows/main.yml/badge.svg)](https://github.com/ag14774/poetry-monoranger-plugin/actions/workflows/main.yml)
 
 **Monoranger** is a plugin for [Poetry](https://python-poetry.org/) that helps you manage your monorepo.
 
