@@ -1,9 +1,16 @@
 [tool.poetry]
 name = "poetry-monoranger-plugin"
 version = "0.1.0"
-description = ""
+description = "Monoranger is a plugin for Poetry that helps you manage your monorepo, enabling shared lockfiles and virtual environments."
+license = "Apache-2.0"
 authors = ["Andreas Georgiou <andreas.x.georgiou@gsk.com>"]
 readme = "README.md"
+repository = "https://github.com/ag14774/poetry-monoranger-plugin"
+keywords = ["packaging", "poetry", "monorepo", "lockfile", "virtualenv"]
+classifiers = [
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Libraries :: Python Modules"
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
