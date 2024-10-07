@@ -17,10 +17,10 @@ python = "^3.9"
 poetry = ">=1.8.0,<1.9.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.6.4"
+ruff = "^0.6.9"
 mypy = "^1.11.2"
-pre-commit = "^3.8.0"
-pre-commit-hooks = "^4.6.0"
+pre-commit = "^4.0.0"
+pre-commit-hooks = "^5.0.0"
 pytest = "^8.3.3"
 
 [tool.poetry.group.ci]
