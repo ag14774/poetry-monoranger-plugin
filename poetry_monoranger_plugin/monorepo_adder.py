@@ -145,11 +145,21 @@ class MonorepoAdderRemover:
 
         installer.whitelist([poetry.package.name])
 
-        status = installer.run()
+        last_exc = None
+        status = 0
 
-        if status != 0 and not command.option("dry-run") and self.pre_add_pyproject is not None:
-            io.write_line("<error>An error occurred during the installation. Rolling back changes...</error>")
-            assert isinstance(self.pre_add_pyproject, TOMLDocument)
-            poetry.file.write(self.pre_add_pyproject)
+        try:
+            status = installer.run()
+        except Exception as e:
+            last_exc = e
+            status = 1
+        finally:
+            if status != 0 and not command.option("dry-run") and self.pre_add_pyproject is not None:
+                io.write_line("\n<error>An error occurred during the installation. Rolling back changes...</error>")
+                assert isinstance(self.pre_add_pyproject, TOMLDocument)
+                poetry.file.write(self.pre_add_pyproject)
 
-        event.set_exit_code(status)
+            if last_exc is not None:
+                raise last_exc
+
+            event.set_exit_code(status)
