@@ -17,7 +17,7 @@ python = "^3.9"
 poetry = ">=1.8.0,<1.9.0"
 
 [tool.poetry.group.dev.dependencies]
-ruff = "^0.6.9"
+ruff = ">=0.6.9,<0.8.0"
 mypy = "^1.11.2"
 pre-commit = "^4.0.0"
 pre-commit-hooks = "^5.0.0"
