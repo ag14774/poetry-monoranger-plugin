@@ -8,6 +8,7 @@ from __future__ import annotations
 import copy
 from typing import TYPE_CHECKING
 
+from poetry.config.config import Config
 from poetry.console.commands.add import AddCommand
 from poetry.console.commands.remove import RemoveCommand
 from poetry.factory import Factory
@@ -125,6 +126,8 @@ class MonorepoAdderRemover:
         if self.pre_add_pyproject and (poetry.file.read() == self.pre_add_pyproject):
             return
 
+        # Force reload global config in order to undo changes that happened due to subproject's poetry.toml configs
+        _ = Config.create(reload=True)
         monorepo_root = (poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
         monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io, disable_cache=poetry.disable_cache)
 
