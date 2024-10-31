@@ -10,6 +10,7 @@ from __future__ import annotations
 import os
 from typing import TYPE_CHECKING
 
+from poetry.config.config import Config
 from poetry.console.commands.env_command import EnvCommand
 from poetry.console.commands.installer_command import InstallerCommand
 from poetry.console.commands.self.self_command import SelfCommand
@@ -65,6 +66,8 @@ class VenvModifier:
         io = event.io
         poetry = command.poetry
 
+        # Force reload global config in order to undo changes that happened due to subproject's poetry.toml configs
+        _ = Config.create(reload=True)
         monorepo_root = (poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
         monorepo_root_poetry = Factory().create_poetry(cwd=monorepo_root, io=io, disable_cache=poetry.disable_cache)
 

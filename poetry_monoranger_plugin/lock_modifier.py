@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from poetry.config.config import Config
 from poetry.console.commands.install import InstallCommand
 from poetry.console.commands.lock import LockCommand
 from poetry.console.commands.update import UpdateCommand
@@ -49,6 +50,8 @@ class LockModifier:
         io = event.io
         io.write_line("<info>Running command from monorepo root directory</info>")
 
+        # Force reload global config in order to undo changes that happened due to subproject's poetry.toml configs
+        _ = Config.create(reload=True)
         monorepo_root = (command.poetry.pyproject_path.parent / self.plugin_conf.monorepo_root).resolve()
         monorepo_root_poetry = Factory().create_poetry(
             cwd=monorepo_root, io=io, disable_cache=command.poetry.disable_cache
