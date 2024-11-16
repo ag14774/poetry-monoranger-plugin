@@ -86,6 +86,10 @@ Removes a dependency from the specified project, updates the shared lockfile, an
 
 Builds the **current** project, replacing editable path dependencies with the current version of the package. This is useful when building a project that depends on another project in the monorepo, as it ensures that the built package can be installed (e.g. as a wheel file) without expecting the other project to be present in a specific location.
 
+- `poetry export`:
+
+Exports the dependencies from the shared lock file (located at the root).
+
 
 ### Configuration
 The plugin can be configured in the `pyproject.toml` file of each project. The following options are available:
