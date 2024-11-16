@@ -22,6 +22,11 @@ from poetry.console.commands.self.self_command import SelfCommand
 from poetry.console.commands.update import UpdateCommand
 from poetry.plugins.application_plugin import ApplicationPlugin
 
+try:
+    from poetry_plugin_export.command import ExportCommand
+except:
+    ExportCommand = None
+
 from poetry_monoranger_plugin.config import MonorangerConfig
 
 if TYPE_CHECKING:
@@ -103,7 +108,7 @@ class Monoranger(ApplicationPlugin):
 
             VenvModifier(self.plugin_conf).execute(event)
 
-        if isinstance(command, (LockCommand, InstallCommand, UpdateCommand)):
+        if isinstance(command, (LockCommand, InstallCommand, UpdateCommand, ExportCommand)):
             from poetry_monoranger_plugin.lock_modifier import LockModifier
 
             # NOTE: consider moving this to a separate UpdateModifier class
