@@ -22,7 +22,6 @@ def mock_event_gen():
                 "packageB",
                 Path("../packageB"),
                 develop=True,
-                groups=[main_grp.name],
                 optional=True,
                 extras=["fast"],
             )
