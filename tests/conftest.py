@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 import pytest
 from poetry.core.packages.dependency import Dependency
-from poetry.core.packages.dependency_group import DependencyGroup
+from poetry.core.packages.dependency_group import MAIN_GROUP, DependencyGroup
 from poetry.core.packages.directory_dependency import DirectoryDependency
 from poetry.poetry import Poetry
 
@@ -15,9 +15,18 @@ def mock_event_gen():
     def _factory(command_cls: type[Command], disable_cache: bool):
         from cleo.events.console_command_event import ConsoleCommandEvent
 
-        main_grp = DependencyGroup("main")
-        main_grp.add_dependency(DirectoryDependency("packageB", Path("../packageB"), develop=True))
+        main_grp = DependencyGroup(MAIN_GROUP)
         main_grp.add_dependency(Dependency("numpy", "==1.5.0"))
+        main_grp.add_dependency(
+            DirectoryDependency(
+                "packageB",
+                Path("../packageB"),
+                develop=True,
+                groups=[main_grp.name],
+                optional=True,
+                extras=["fast"],
+            )
+        )
 
         mock_command = Mock(spec=command_cls)
         mock_command.poetry = Mock(spec=Poetry)
