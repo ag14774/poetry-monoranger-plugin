@@ -35,6 +35,8 @@ def test_executes_path_rewriting_for_build_command(mock_event_gen, disable_cache
     new_dependencies = sorted(new_dependencies.dependencies, key=lambda x: x.name)
     for i, dep in enumerate(new_dependencies):
         assert dep.name == original_dependencies[i].name
+        assert dep.is_optional() == original_dependencies[i].is_optional()
+        assert dep.extras == original_dependencies[i].extras
         if isinstance(original_dependencies[i], DirectoryDependency):
             assert dep.pretty_constraint == "0.1.0"
         else:

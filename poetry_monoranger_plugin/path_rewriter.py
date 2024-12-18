@@ -97,4 +97,10 @@ class PathRewriter:
         else:
             raise ValueError(f"Invalid version rewrite rule: {self.plugin_conf.version_rewrite_rule}")
 
-        return Dependency(name, pinned_version, groups=dependency.groups)
+        return Dependency(
+            name,
+            pinned_version,
+            groups=dependency.groups,
+            optional=dependency.is_optional(),
+            extras=dependency.extras,
+        )
