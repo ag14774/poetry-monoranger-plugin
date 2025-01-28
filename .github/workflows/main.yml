@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   tests:
-    name: ${{ matrix.os }} / ${{ matrix.python-version }} ${{ matrix.suffix }}
+    name: ${{ matrix.os }} / ${{ matrix.python-version }} / ${{ matrix.poetry-version }} ${{ matrix.suffix }}
     runs-on: ${{ matrix.image }}
     defaults:
       run:
