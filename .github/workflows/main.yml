@@ -26,6 +26,7 @@ jobs:
       matrix:
         os: [Ubuntu, macOS, Windows]
         python-version: ["3.9", "3.10", "3.11"]
+        poetry-version: ["1.8.5", "2.0.1", ""]
         include:
           - os: Ubuntu
             image: ubuntu-latest
@@ -50,6 +51,8 @@ jobs:
     - name: Bootstrap poetry
       run: |
         curl -sL https://install.python-poetry.org | python - -y ${{ matrix.bootstrap-args }}
+      env:
+        POETRY_VERSION: ${{ matrix.poetry-version }}
 
     - name: Update PATH
       if: ${{ matrix.os != 'Windows' }}
@@ -67,7 +70,7 @@ jobs:
       id: cache
       with:
         path: .venv
-        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ hashFiles('**/poetry.lock') }}
+        key: venv-${{ runner.os }}-${{ steps.full-python-version.outputs.version }}-${{ matrix.poetry-version }}-${{ hashFiles('**/poetry.lock') }}
 
     - name: Ensure cache is healthy
       if: steps.cache.outputs.cache-hit == 'true'
@@ -75,6 +78,11 @@ jobs:
 
     - name: Install dependencies
       run: poetry install --with ci
+
+    - name: Install correct poetry version
+      if: matrix.poetry-version != ''
+      run: |
+        poetry run pip install "poetry==${{ matrix.poetry-version }}"
 
     - name: Run pre-commit tests
       run: |
