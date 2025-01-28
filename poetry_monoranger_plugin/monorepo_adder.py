@@ -91,9 +91,9 @@ class MonorepoAdderRemover:
             event (ConsoleCommandEvent): The event that triggered the command.
         """
         command = event.command
-        assert isinstance(
-            command, (AddCommand, RemoveCommand)
-        ), f"{self.__class__.__name__} can only be used for `poetry add` and `poetry remove` command"
+        assert isinstance(command, (AddCommand, RemoveCommand)), (
+            f"{self.__class__.__name__} can only be used for `poetry add` and `poetry remove` command"
+        )
 
         # Create a copy of the poetry object to prevent the command from modifying the original poetry object
         poetry = Poetry.__new__(Poetry)
@@ -116,9 +116,9 @@ class MonorepoAdderRemover:
             event (ConsoleTerminateEvent): The event that triggered the command termination.
         """
         command = event.command
-        assert isinstance(
-            command, (AddCommand, RemoveCommand)
-        ), f"{self.__class__.__name__} can only be used for `poetry add` and `poetry remove` command"
+        assert isinstance(command, (AddCommand, RemoveCommand)), (
+            f"{self.__class__.__name__} can only be used for `poetry add` and `poetry remove` command"
+        )
 
         io = event.io
         poetry = command.poetry

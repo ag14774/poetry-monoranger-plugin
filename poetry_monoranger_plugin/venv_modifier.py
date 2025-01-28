@@ -46,9 +46,9 @@ class VenvModifier:
             event (ConsoleCommandEvent): The triggering event.
         """
         command = event.command
-        assert isinstance(command, EnvCommand) and not isinstance(
-            command, SelfCommand
-        ), f"{self.__class__.__name__} can only be used for commands that require an environment (except `poetry self`)"
+        assert isinstance(command, EnvCommand) and not isinstance(command, SelfCommand), (
+            f"{self.__class__.__name__} can only be used for commands that require an environment (except `poetry self`)"
+        )
 
         # We don't want to activate the monorepo root venv if we are already inside a venv
         # in order to be consistent with poetry's current behavior.

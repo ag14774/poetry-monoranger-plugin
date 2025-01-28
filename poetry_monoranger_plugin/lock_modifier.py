@@ -43,9 +43,9 @@ class LockModifier:
             event (ConsoleCommandEvent): The triggering event.
         """
         command = event.command
-        assert isinstance(
-            command, (LockCommand, InstallCommand, UpdateCommand)
-        ), f"{self.__class__.__name__} can only be used for `poetry lock`, `poetry install`, and `poetry update` commands"
+        assert isinstance(command, (LockCommand, InstallCommand, UpdateCommand)), (
+            f"{self.__class__.__name__} can only be used for `poetry lock`, `poetry install`, and `poetry update` commands"
+        )
 
         io = event.io
         io.write_line("<info>Running command from monorepo root directory</info>")

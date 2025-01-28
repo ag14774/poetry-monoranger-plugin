@@ -35,9 +35,9 @@ class PathRewriter:
             event (ConsoleCommandEvent): The triggering event.
         """
         command = event.command
-        assert isinstance(
-            command, BuildCommand
-        ), f"{self.__class__.__name__} can only be used with the `poetry build` command"
+        assert isinstance(command, BuildCommand), (
+            f"{self.__class__.__name__} can only be used with the `poetry build` command"
+        )
 
         io = event.io
         poetry = command.poetry
