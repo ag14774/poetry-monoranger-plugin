@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pkg-two"
+version = "0.1.0"
+description = ""
+authors = ["Example <example@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+tqdm = "^4.67.1"
+
+[tool.poetry-monoranger-plugin]
+enabled = true
+monorepo-root = "../"
+version-rewrite-rule = '=='
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

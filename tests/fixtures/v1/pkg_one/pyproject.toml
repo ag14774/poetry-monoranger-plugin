@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "pkg-one"
+version = "0.1.0"
+description = ""
+authors = ["Example <example@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+# A list of all of the optional dependencies, some of which are included in the
+# below `extras`. They can be opted into by apps.
+pandas = { version = "^2.0.0", optional = true }
+
+[tool.poetry.extras]
+withpandas = ["pandas"]
+
+[tool.poetry-monoranger-plugin]
+enabled = true
+monorepo-root = "../"
+version-rewrite-rule = '=='
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

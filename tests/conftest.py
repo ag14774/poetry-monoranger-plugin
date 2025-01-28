@@ -1,20 +1,25 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING
 from unittest.mock import Mock
 
 import pytest
+from cleo.events.console_command_event import ConsoleCommandEvent
 from poetry.core.packages.dependency import Dependency
 from poetry.core.packages.dependency_group import MAIN_GROUP, DependencyGroup
 from poetry.core.packages.directory_dependency import DirectoryDependency
 from poetry.poetry import Poetry
 
+from tests.helpers import MockRepoManager, _poetry_run
+
+if TYPE_CHECKING:
+    from poetry.console.commands.command import Command
+
 
 @pytest.fixture
 def mock_event_gen():
-    from poetry.console.commands.command import Command
-
     def _factory(command_cls: type[Command], disable_cache: bool):
-        from cleo.events.console_command_event import ConsoleCommandEvent
-
         main_grp = DependencyGroup(MAIN_GROUP)
         main_grp.add_dependency(Dependency("numpy", "==1.5.0"))
         main_grp.add_dependency(
@@ -52,21 +57,12 @@ def mock_event_gen():
 
 
 @pytest.fixture
-def mock_terminate_event_gen(mock_event_gen):
-    from poetry.console.commands.command import Command
+def poetry_run():
+    return _poetry_run
 
-    def _factory(command_cls: type[Command], disable_cache: bool):
-        from cleo.events.console_terminate_event import ConsoleTerminateEvent
 
-        mock_event = mock_event_gen(command_cls, disable_cache)
-        mock_io = mock_event.io
-        mock_command = mock_event.command
-        del mock_event
-
-        mock_terminate_event = Mock(spec=ConsoleTerminateEvent)
-        mock_terminate_event.command = mock_command
-        mock_terminate_event.io = mock_io
-
-        return mock_terminate_event
-
-    return _factory
+@pytest.fixture(scope="session")
+def repo_manager():
+    obj = MockRepoManager()
+    yield obj
+    del obj
