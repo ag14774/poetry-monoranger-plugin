@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "pkg-three"
+version = "0.1.0"
+description = ""
+authors = ["Example <example@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pkg-two = { path = '../pkg_two', develop = true, extras = ["withpandas"] }
+
+[tool.poetry-monoranger-plugin]
+enabled = true
+monorepo-root = "../"
+version-rewrite-rule = '=='
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
