@@ -151,10 +151,13 @@ def _poetry_run(monorepo_root: Path, sub_project: str | None = None, cmd: str = 
     input_obj.set_stream(input_stream)
 
     output_stream = io.StringIO()
-    output_obj = StreamOutput(output_stream)
-
     error_stream = io.StringIO()
-    error_obj = StreamOutput(error_stream)
+
+    # NO_COLOR is set to prevent a call to StreamOutput._has_color_support which causes
+    # an error on Windows when stream is not sys.stdout or sys.stderr
+    with patch.dict(os.environ, {"NO_COLOR": "1"}):
+        output_obj = StreamOutput(output_stream, decorated=False)
+        error_obj = StreamOutput(error_stream, decorated=False)
 
     copied_env = os.environ.copy()
     copied_env.pop("VIRTUAL_ENV", None)
