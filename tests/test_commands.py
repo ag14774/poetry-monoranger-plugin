@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import tarfile
 
-from tests.helpers import is_system_env
+import pytest
+
+from tests.helpers import POETRY_V2, is_system_env
 
 
 def test_add(repo_manager, poetry_run):
@@ -67,7 +69,10 @@ def test_update(repo_manager, poetry_run):
     poetry_run(v1_dir, "pkg_one", "add numpy<=1.25")
     pkg_one_pyproject = (v1_dir / "pkg_one" / "pyproject.toml").read_text()
     (v1_dir / "pkg_one" / "pyproject.toml").write_text(pkg_one_pyproject.replace("<=1.25", "<=1.26.4"))
-    poetry_run(v1_dir, "pkg_one", "lock --no-update")
+    if POETRY_V2:
+        poetry_run(v1_dir, "pkg_one", "lock")
+    else:
+        poetry_run(v1_dir, "pkg_one", "lock --no-update")
     # This results in a lockfile with numpy==1.25 but pyproject.toml permits up to 1.26.5
 
     root_lock = (v1_dir / "poetry.lock").read_text()
@@ -109,7 +114,8 @@ def test_lock(repo_manager, poetry_run):
     assert root_pyproject == (v1_dir / "pyproject.toml").read_text()  # root pyproject.toml is not modified
 
 
-def test_install(repo_manager, poetry_run):
+@pytest.mark.parametrize("sync", [True, False])
+def test_install(repo_manager, poetry_run, sync: bool):
     # Arrange
     v1_dir = repo_manager.get_repo("v1", preinstalled=False)
     envs_before = repo_manager.get_envs(v1_dir)
@@ -121,7 +127,10 @@ def test_install(repo_manager, poetry_run):
         assert is_system_env(env)
 
     # Act
-    result = poetry_run(v1_dir, "pkg_one", "install")
+    if sync:
+        result = poetry_run(v1_dir, "pkg_one", "sync") if POETRY_V2 else poetry_run(v1_dir, "pkg_one", "install --sync")
+    else:
+        result = poetry_run(v1_dir, "pkg_one", "install")
 
     # Assert
     assert result.exit_code == 0

@@ -44,7 +44,7 @@ class LockModifier:
         """
         command = event.command
         assert isinstance(command, (LockCommand, InstallCommand, UpdateCommand)), (
-            f"{self.__class__.__name__} can only be used for `poetry lock`, `poetry install`, and `poetry update` commands"
+            f"{self.__class__.__name__} can only be used for `poetry lock`, `poetry install`, `poetry update`, `poetry sync` commands"
         )
 
         io = event.io

@@ -11,6 +11,8 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
+import poetry.__version__
+import pytest
 from cleo.events.console_command_event import ConsoleCommandEvent
 from cleo.events.console_events import COMMAND
 from cleo.io.inputs.argv_input import ArgvInput
@@ -25,6 +27,9 @@ if TYPE_CHECKING:
     from cleo.events.event_dispatcher import EventDispatcher
     from poetry.console.commands.command import Command
     from poetry.utils.env.base_env import Env
+
+POETRY_V2 = poetry.__version__.__version__.startswith("2")
+only_poetry_v2 = pytest.mark.skipif(POETRY_V2 is False, reason="requires poetry 2.0.0 or higher")
 
 
 class MockApplication(Application):
