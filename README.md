@@ -10,6 +10,7 @@
 - Shared `poetry.lock` file across multiple projects in a monorepo
 - Shared virtual environment across multiple projects in a monorepo
 - Rewrite path dependencies during `poetry build`
+- Compatible with both Poetry v1 and v2
 
 ## Installation
 
@@ -69,6 +70,10 @@ Ensures that the shared lock file (located at the root) is up-to-date irrespecti
 - `poetry install`:
 
 Installs dependencies for all projects in the monorepo, ensuring that the shared virtual environment is used. As before, this command can be run from any directory within the monorepo without needing to switch to the root directory.
+
+- `poetry sync` (v2 only):
+
+Installs dependencies for all projects in the monorepo, ensuring that the shared virtual environment is used, removing any dependencies that do not exist in the lockfile. As before, this command can be run from any directory within the monorepo without needing to switch to the root directory.
 
 - `poetry update`:
 
