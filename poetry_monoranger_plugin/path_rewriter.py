@@ -6,6 +6,7 @@ rewrite directory dependencies to their pinned versions.
 
 from __future__ import annotations
 
+from contextlib import suppress
 from typing import TYPE_CHECKING, cast
 
 import poetry.__version__
@@ -15,8 +16,10 @@ from poetry.core.constraints.version import Version
 from poetry.core.packages.dependency import Dependency
 from poetry.core.packages.dependency_group import MAIN_GROUP
 from poetry.core.packages.directory_dependency import DirectoryDependency
-from poetry.core.pyproject.exceptions import PyProjectError  # type: ignore[attr-defined]  # exists only in >=2.0.0
 from poetry.core.pyproject.toml import PyProjectTOML
+
+with suppress(ImportError):
+    from poetry.core.pyproject.exceptions import PyProjectError  # type: ignore[attr-defined]  # exists only in >=2.0.0
 
 if TYPE_CHECKING:
     from cleo.events.console_command_event import ConsoleCommandEvent
