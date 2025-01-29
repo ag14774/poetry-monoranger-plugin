@@ -28,7 +28,7 @@ pytest-mock = "^3.14.0"
 optional = true
 
 [tool.poetry.group.ci.dependencies]
-pytest-github-actions-annotate-failures = "^0.2.0"
+pytest-github-actions-annotate-failures = ">=0.2,<0.4"
 
 [tool.mypy]
 disable_error_code = "import-untyped"
