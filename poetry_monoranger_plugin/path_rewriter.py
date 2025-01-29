@@ -15,7 +15,7 @@ from poetry.core.constraints.version import Version
 from poetry.core.packages.dependency import Dependency
 from poetry.core.packages.dependency_group import MAIN_GROUP
 from poetry.core.packages.directory_dependency import DirectoryDependency
-from poetry.core.pyproject.exceptions import PyProjectError
+from poetry.core.pyproject.exceptions import PyProjectError  # type: ignore[attr-defined]  # exists only in >=2.0.0
 from poetry.core.pyproject.toml import PyProjectTOML
 
 if TYPE_CHECKING:
@@ -68,7 +68,7 @@ class PathRewriter:
 
         # Collect extras
         features: defaultdict[str, set] = defaultdict(set)
-        for dep_set in [dep_grp._poetry_dependencies, dep_grp.dependencies, dep_grp.dependencies_for_locking]:
+        for dep_set in [dep_grp._poetry_dependencies, dep_grp.dependencies, dep_grp.dependencies_for_locking]:  # type: ignore[attr-defined]
             # Collect all extras for each dependency from all three ways of accessing deps
             # (._poetry_dependencies, .dependencies, .dependencies_for_locking)
             if dep_set is not None:
@@ -76,7 +76,8 @@ class PathRewriter:
                     if dep.features:
                         features[dep.name].update(dep.features)
 
-        deps_for_locking = {dep.name: dep for dep in dep_grp.dependencies_for_locking}
+        # Required to have type: ignore[attr-defined] as the attribute is only defined in Poetry >=2.0.0
+        deps_for_locking = {dep.name: dep for dep in dep_grp.dependencies_for_locking}  # type: ignore[attr-defined]
 
         directory_deps = []
         for dep in dep_grp.dependencies:
