@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pkg-two = { path = '../pkg_two', develop = true, extras = ["withpandas"] }
+pkg-one = { path = '../pkg_one', develop = true, extras = ["withfsspec"] }
 
 [tool.poetry-monoranger-plugin]
 enabled = true

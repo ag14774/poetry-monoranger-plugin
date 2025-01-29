@@ -1,0 +1,29 @@
+[project]
+name = "v2"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Example Example",email = "example@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pkg-one",
+    "pkg-two",
+    "pkg-three"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+package-mode = false
+
+[tool.poetry.dependencies]
+pkg-one = {path = "./pkg_one", develop = true}
+pkg-two = {path = "./pkg_two", develop = true}
+pkg-three = {path = "./pkg_three", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.9.3"

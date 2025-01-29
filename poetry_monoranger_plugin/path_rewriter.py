@@ -6,8 +6,11 @@ rewrite directory dependencies to their pinned versions.
 
 from __future__ import annotations
 
+from contextlib import suppress
 from typing import TYPE_CHECKING, cast
 
+import poetry.__version__
+from mypy.checkexpr import defaultdict
 from poetry.console.commands.build import BuildCommand
 from poetry.core.constraints.version import Version
 from poetry.core.packages.dependency import Dependency
@@ -15,11 +18,17 @@ from poetry.core.packages.dependency_group import MAIN_GROUP
 from poetry.core.packages.directory_dependency import DirectoryDependency
 from poetry.core.pyproject.toml import PyProjectTOML
 
+with suppress(ImportError):
+    from poetry.core.pyproject.exceptions import PyProjectError  # type: ignore[attr-defined]  # exists only in >=2.0.0
+
 if TYPE_CHECKING:
     from cleo.events.console_command_event import ConsoleCommandEvent
+    from poetry.core.packages.dependency_group import DependencyGroup
     from poetry.poetry import Poetry
 
     from poetry_monoranger_plugin.config import MonorangerConfig
+
+POETRY_V2 = poetry.__version__.__version__.startswith("2.")
 
 
 class PathRewriter:
@@ -43,7 +52,7 @@ class PathRewriter:
         poetry = command.poetry
 
         main_deps_group = poetry.package.dependency_group(MAIN_GROUP)
-        directory_deps = [dep for dep in main_deps_group.dependencies if isinstance(dep, DirectoryDependency)]
+        directory_deps = self._get_directory_deps(main_deps_group)
 
         for dependency in directory_deps:
             try:
@@ -54,6 +63,37 @@ class PathRewriter:
 
             main_deps_group.remove_dependency(dependency.name)
             main_deps_group.add_dependency(pinned)
+
+    @staticmethod
+    def _get_directory_deps(dep_grp: DependencyGroup) -> list[DirectoryDependency]:
+        if not POETRY_V2:
+            return [dep for dep in dep_grp.dependencies if isinstance(dep, DirectoryDependency)]
+
+        # Collect extras
+        features: defaultdict[str, set] = defaultdict(set)
+        for dep_set in [dep_grp._poetry_dependencies, dep_grp.dependencies, dep_grp.dependencies_for_locking]:  # type: ignore[attr-defined]
+            # Collect all extras for each dependency from all three ways of accessing deps
+            # (._poetry_dependencies, .dependencies, .dependencies_for_locking)
+            if dep_set is not None:
+                for dep in dep_set:
+                    if dep.features:
+                        features[dep.name].update(dep.features)
+
+        # Required to have type: ignore[attr-defined] as the attribute is only defined in Poetry >=2.0.0
+        deps_for_locking = {dep.name: dep for dep in dep_grp.dependencies_for_locking}  # type: ignore[attr-defined]
+
+        directory_deps = []
+        for dep in dep_grp.dependencies:
+            if isinstance(dep, DirectoryDependency):
+                dir_dep = dep
+            elif isinstance(deps_for_locking.get(dep.name, None), DirectoryDependency):
+                dir_dep = cast(DirectoryDependency, deps_for_locking[dep.name])
+            else:
+                continue
+
+            directory_deps.append(dir_dep.with_features(features[dir_dep.name]))
+
+        return directory_deps
 
     def _get_dependency_pyproject(self, poetry: Poetry, dependency: DirectoryDependency) -> PyProjectTOML:
         pyproject_file = poetry.pyproject_path.parent / dependency.path / "pyproject.toml"
@@ -84,8 +124,14 @@ class PathRewriter:
         """
         dep_pyproject: PyProjectTOML = self._get_dependency_pyproject(poetry, dependency)
 
-        name = cast(str, dep_pyproject.poetry_config["name"])
-        version = cast(str, dep_pyproject.poetry_config["version"])
+        try:
+            name = cast(str, dep_pyproject.poetry_config["name"])
+            version = cast(str, dep_pyproject.poetry_config["version"])
+        except PyProjectError:
+            # Fallback to the project section since Poetry V2 also supports PEP 621 pyproject.toml files
+            name = cast(str, dep_pyproject.data["project"]["name"])
+            version = cast(str, dep_pyproject.data["project"]["version"])
+
         if self.plugin_conf.version_rewrite_rule in ["~", "^"]:
             pinned_version = f"{self.plugin_conf.version_rewrite_rule}{version}"
         elif self.plugin_conf.version_rewrite_rule == "==":
