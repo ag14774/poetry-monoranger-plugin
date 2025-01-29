@@ -56,8 +56,8 @@ class MockRepoManager:
     """A helper class to generate test repositories"""
 
     def __init__(self):
-        self._src_repos: dict[str, Path] = {"v1": None}  # type: ignore[assignment, dict-item]
-        self._preinstalled_repos: dict[str, Path] = {"v1": None}  # type: ignore[assignment, dict-item]
+        self._src_repos: dict[str, Path] = {"v1": None, "v2": None}  # type: ignore[assignment, dict-item]
+        self._preinstalled_repos: dict[str, Path] = {"v1": None, "v2": None}  # type: ignore[assignment, dict-item]
 
         self._tmp_path_obj = tempfile.TemporaryDirectory()
         self._tmp_path = Path(self._tmp_path_obj.name)
