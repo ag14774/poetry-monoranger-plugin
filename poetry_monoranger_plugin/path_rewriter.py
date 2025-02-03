@@ -6,11 +6,11 @@ rewrite directory dependencies to their pinned versions.
 
 from __future__ import annotations
 
+from collections import defaultdict
 from contextlib import suppress
 from typing import TYPE_CHECKING, cast
 
 import poetry.__version__
-from mypy.checkexpr import defaultdict
 from poetry.console.commands.build import BuildCommand
 from poetry.core.constraints.version import Version
 from poetry.core.packages.dependency import Dependency
