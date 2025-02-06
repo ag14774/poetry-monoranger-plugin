@@ -55,7 +55,7 @@ def test_handles_all_command_events(mock_event_gen, cmd_type: type[Command]):
     cmd_to_patch: dict[type[Command], str] = {
         AddCommand: "poetry_monoranger_plugin.monorepo_adder.MonorepoAdderRemover.execute",
         RemoveCommand: "poetry_monoranger_plugin.monorepo_adder.MonorepoAdderRemover.execute",
-        BuildCommand: "poetry_monoranger_plugin.path_rewriter.PathRewriter.execute",
+        BuildCommand: "poetry_monoranger_plugin.path_dep_pinner.PathDepPinner.execute",
         EnvCommand: "poetry_monoranger_plugin.venv_modifier.VenvModifier.execute",
         LockCommand: "poetry_monoranger_plugin.lock_modifier.LockModifier.execute",
         InstallCommand: "poetry_monoranger_plugin.lock_modifier.LockModifier.execute",

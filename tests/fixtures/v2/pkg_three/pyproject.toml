@@ -14,7 +14,7 @@ dependencies = [
 [tool.poetry-monoranger-plugin]
 enabled = true
 monorepo-root = "../"
-version-rewrite-rule = '=='
+version-pinning-rule = '=='
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
