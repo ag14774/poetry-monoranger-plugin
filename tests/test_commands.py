@@ -196,14 +196,27 @@ def test_build(repo_manager, poetry_run, repo_name):
     assert "Requires-Dist: pkg-one[withfsspec] (==0.1.0)" in pkg_info_path.read_text()
 
 
-# @pytest.mark.parametrize(
-#     "repo_name",
-#     [pytest.param("v1"), pytest.param("v1_v2lock", marks=only_poetry_v2), pytest.param("v2", marks=only_poetry_v2)],
-# )
-# def test_export(repo_manager, poetry_run, repo_name):
-#     # Arrange
-#     root_dir = repo_manager.get_repo(repo_name, preinstalled=False)
-#
-#     # Act
-#     result = poetry_run(root_dir, "pkg_three", "export --format requirements.txt")
-#     print("done")
+@pytest.mark.parametrize(
+    "repo_name",
+    [
+        pytest.param("v1"),
+        pytest.param("v1_v2lock", marks=only_poetry_v2),
+        pytest.param(
+            "v2", marks=[only_poetry_v2, pytest.mark.skip(reason="not working currently for PEP621 projects")]
+        ),
+    ],
+)
+def test_export(repo_manager, poetry_run, repo_name):
+    # Arrange
+    root_dir = repo_manager.get_repo(repo_name, preinstalled=False)
+
+    # Act
+    result = poetry_run(
+        root_dir, "pkg_three", "export --format requirements.txt --without-hashes --output requirements.txt"
+    )
+    requirements_txt = (root_dir / "pkg_three" / "requirements.txt").read_text()
+
+    assert result.exit_code == 0
+    assert len(requirements_txt.strip().split("\n")) == 2  # 2 packages in requirements.txt
+    assert "fsspec" in requirements_txt
+    assert "pkg-one" in requirements_txt
