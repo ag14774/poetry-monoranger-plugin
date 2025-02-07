@@ -163,9 +163,10 @@ class ExportModifier:
         # if anything has changed (and the lock file contains an invalid version).
         use_latest = [p.name for p in locked_repository.packages if p.source_type == "directory"]
         pinner = PathDepPinner(self.plugin_conf)
+        packages: list[Package] | dict[Package, Any]
         if POETRY_V2:
-            packages = solver.solve(use_latest=use_latest).get_solved_packages()  # type: ignore[attr-defined]
-            packages = {_pin_package(pak, pinner, io): info for pak, info in packages.items()}
+            solved_packages: dict[Package, Any] = solver.solve(use_latest=use_latest).get_solved_packages()  # type: ignore[attr-defined]
+            packages = {_pin_package(pak, pinner, io): info for pak, info in solved_packages.items()}
         else:
             from poetry.installation.operations import Uninstall, Update
             from poetry.repositories.lockfile_repository import LockfileRepository
@@ -187,6 +188,6 @@ class ExportModifier:
         if not POETRY_V2:
             poetry._package = PathDepPinningPackage.from_package(poetry.package, pinner)
 
-        temp_locker.set_lock_data(poetry.package, packages)
+        temp_locker.set_lock_data(poetry.package, packages)  # type: ignore[arg-type]
         poetry.set_locker(temp_locker)
         command.set_poetry(poetry)
