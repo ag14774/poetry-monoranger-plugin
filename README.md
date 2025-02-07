@@ -9,7 +9,7 @@
 **Main Features**:
 - Shared `poetry.lock` file across multiple projects in a monorepo
 - Shared virtual environment across multiple projects in a monorepo
-- Replace path dependencies during `poetry build` with pinned versions
+- Replace path dependencies during `poetry build` and `poetry export` with pinned versions
 - Compatible with both Poetry v1 and v2
 
 ## Installation
@@ -91,6 +91,9 @@ Removes a dependency from the specified project, updates the shared lockfile, an
 
 Builds the **current** project, replacing editable path dependencies with the current version of the package. This is useful when building a project that depends on another project in the monorepo, as it ensures that the built package can be installed (e.g. as a wheel file) without expecting the other project to be present in a specific location.
 
+- `poetry export`:
+
+Export the requirements of the **current** project, replacing editable path dependencies with the current version of the packages. This is useful when exporting the requirements of a project that depends on another project in the monorepo, as it ensures that the exported requirements can be installed without expecting the other project to be present in a specific location.
 
 ### Configuration
 The plugin can be configured in the `pyproject.toml` file of each project. The following options are available:
