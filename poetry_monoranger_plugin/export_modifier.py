@@ -13,6 +13,7 @@ import weakref
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 
+import poetry.__version__ as poetry_version
 from poetry.config.config import Config
 from poetry.core.packages.dependency_group import MAIN_GROUP
 from poetry.factory import Factory
@@ -25,20 +26,53 @@ from poetry_monoranger_plugin.path_dep_pinner import PathDepPinner
 if TYPE_CHECKING:
     from cleo.events.console_command_event import ConsoleCommandEvent
     from cleo.io.io import IO
+    from poetry.core.packages.dependency import Dependency
     from poetry.core.packages.package import Package
 
     from poetry_monoranger_plugin.config import MonorangerConfig
 
+POETRY_V2 = poetry_version.__version__.startswith("2.")
+
 TemporaryLockerT = TypeVar("TemporaryLockerT", bound="TemporaryLocker")
+
+if not POETRY_V2:
+    from poetry.core.packages.directory_dependency import DirectoryDependency
+    from poetry.core.packages.project_package import ProjectPackage
+
+    class PathDepPinningPackage(ProjectPackage):
+        """A modified ProjectPackage that pins path dependencies to specific versions
+
+        *NOTE*: Only required for Poetry V1
+        """
+
+        _pinner: PathDepPinner
+
+        @classmethod
+        def from_package(cls, package: Package, pinner: PathDepPinner) -> PathDepPinningPackage:
+            """Creates a new PathDepPinningPackage from an existing Package"""
+            new_package = cls.__new__(cls)
+            new_package.__dict__.update(package.__dict__)
+
+            new_package._pinner = pinner
+            return new_package
+
+        @property
+        def all_requires(self) -> list[Dependency]:
+            """Returns the main dependencies and group dependencies
+            enriched with Poetry-specific information for locking while ensuring
+            path dependencies are pinned to specific versions.
+            """
+            deps = super().all_requires
+            # noinspection PyProtectedMember
+            deps = [self._pinner._pin_dependency(dep) if isinstance(dep, DirectoryDependency) else dep for dep in deps]
+            return deps
 
 
 class TemporaryLocker(Locker):
     """A temporary locker that is used to store the lock file in a temporary file."""
 
     @classmethod
-    def from_locker(
-        cls: type[TemporaryLockerT], locker: Locker, pyproject_data: dict[str, Any] | None
-    ) -> TemporaryLockerT:
+    def from_locker(cls: type[TemporaryLockerT], locker: Locker, data: dict[str, Any] | None) -> TemporaryLockerT:
         """Creates a temporary locker from an existing locker."""
         temp_file = tempfile.NamedTemporaryFile(prefix="poetry_lock_", delete=False)  # noqa: SIM115
         temp_file_path = Path(temp_file.name)
@@ -46,10 +80,10 @@ class TemporaryLocker(Locker):
 
         shutil.copy(locker.lock, temp_file_path)
 
-        if pyproject_data is None:
-            pyproject_data = locker._pyproject_data
+        if data is None:
+            data = locker._pyproject_data if POETRY_V2 else locker._local_config  # type: ignore[attr-defined]
 
-        new_locker: TemporaryLockerT = cls(temp_file_path, pyproject_data)
+        new_locker: TemporaryLockerT = cls(temp_file_path, data)
         weakref.finalize(new_locker, temp_file_path.unlink)
 
         return new_locker
@@ -109,7 +143,10 @@ class ExportModifier:
             cwd=monorepo_root, io=io, disable_cache=command.poetry.disable_cache
         )
 
-        temp_locker = TemporaryLocker.from_locker(monorepo_root_poetry.locker, poetry.pyproject.data)
+        if POETRY_V2:
+            temp_locker = TemporaryLocker.from_locker(monorepo_root_poetry.locker, poetry.pyproject.data)
+        else:
+            temp_locker = TemporaryLocker.from_locker(monorepo_root_poetry.locker, poetry.pyproject.poetry_config)
 
         from poetry.puzzle.solver import Solver
 
@@ -125,10 +162,30 @@ class ExportModifier:
         # Always re-solve directory dependencies, otherwise we can't determine
         # if anything has changed (and the lock file contains an invalid version).
         use_latest = [p.name for p in locked_repository.packages if p.source_type == "directory"]
-        packages = solver.solve(use_latest=use_latest).get_solved_packages()
-
         pinner = PathDepPinner(self.plugin_conf)
-        packages = {_pin_package(pak, pinner, io): info for pak, info in packages.items()}
+        if POETRY_V2:
+            packages = solver.solve(use_latest=use_latest).get_solved_packages()  # type: ignore[attr-defined]
+            packages = {_pin_package(pak, pinner, io): info for pak, info in packages.items()}
+        else:
+            from poetry.installation.operations import Uninstall, Update
+            from poetry.repositories.lockfile_repository import LockfileRepository
+
+            ops = solver.solve(use_latest=use_latest).calculate_operations()
+            packages = [
+                op.target_package if isinstance(op, Update) else op.package
+                for op in ops
+                if not isinstance(op, Uninstall)
+            ]
+
+            lockfile_repo = LockfileRepository()
+            for package in packages:
+                if not lockfile_repo.has_package(package):
+                    lockfile_repo.add_package(package)
+
+            packages = [_pin_package(pak, pinner, io) for pak in lockfile_repo.packages]
+
+        if not POETRY_V2:
+            poetry._package = PathDepPinningPackage.from_package(poetry.package, pinner)
 
         temp_locker.set_lock_data(poetry.package, packages)
         poetry.set_locker(temp_locker)
