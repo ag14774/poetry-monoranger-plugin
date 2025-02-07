@@ -7,7 +7,10 @@ import pytest
 from tests.helpers import POETRY_V2, is_system_env, only_poetry_v2
 
 
-@pytest.mark.parametrize("repo_name", [pytest.param("v1"), pytest.param("v2", marks=only_poetry_v2)])
+@pytest.mark.parametrize(
+    "repo_name",
+    [pytest.param("v1"), pytest.param("v1_v2lock", marks=only_poetry_v2), pytest.param("v2", marks=only_poetry_v2)],
+)
 def test_add(repo_manager, poetry_run, repo_name):
     # Arrange
     root_dir = repo_manager.get_repo(repo_name, preinstalled=True)
@@ -37,7 +40,10 @@ def test_add(repo_manager, poetry_run, repo_name):
         assert env.site_packages.find_distribution("numpy") is None
 
 
-@pytest.mark.parametrize("repo_name", [pytest.param("v1"), pytest.param("v2", marks=only_poetry_v2)])
+@pytest.mark.parametrize(
+    "repo_name",
+    [pytest.param("v1"), pytest.param("v1_v2lock", marks=only_poetry_v2), pytest.param("v2", marks=only_poetry_v2)],
+)
 def test_remove(repo_manager, poetry_run, repo_name):
     # Arrange
     root_dir = repo_manager.get_repo(repo_name, preinstalled=True)
@@ -67,7 +73,10 @@ def test_remove(repo_manager, poetry_run, repo_name):
         assert env.site_packages.find_distribution("numpy") is None
 
 
-@pytest.mark.parametrize("repo_name", [pytest.param("v1"), pytest.param("v2", marks=only_poetry_v2)])
+@pytest.mark.parametrize(
+    "repo_name",
+    [pytest.param("v1"), pytest.param("v1_v2lock", marks=only_poetry_v2), pytest.param("v2", marks=only_poetry_v2)],
+)
 def test_update(repo_manager, poetry_run, repo_name):
     # Arrange
     root_dir = repo_manager.get_repo(repo_name, preinstalled=True)
@@ -104,7 +113,10 @@ def test_update(repo_manager, poetry_run, repo_name):
         assert env.site_packages.find_distribution("numpy") is None
 
 
-@pytest.mark.parametrize("repo_name", [pytest.param("v1"), pytest.param("v2", marks=only_poetry_v2)])
+@pytest.mark.parametrize(
+    "repo_name",
+    [pytest.param("v1"), pytest.param("v1_v2lock", marks=only_poetry_v2), pytest.param("v2", marks=only_poetry_v2)],
+)
 def test_lock(repo_manager, poetry_run, repo_name):
     # Arrange
     root_dir = repo_manager.get_repo(repo_name, preinstalled=False)
@@ -122,7 +134,10 @@ def test_lock(repo_manager, poetry_run, repo_name):
     assert root_pyproject == (root_dir / "pyproject.toml").read_text()  # root pyproject.toml is not modified
 
 
-@pytest.mark.parametrize("repo_name", [pytest.param("v1"), pytest.param("v2", marks=only_poetry_v2)])
+@pytest.mark.parametrize(
+    "repo_name",
+    [pytest.param("v1"), pytest.param("v1_v2lock", marks=only_poetry_v2), pytest.param("v2", marks=only_poetry_v2)],
+)
 @pytest.mark.parametrize("sync", [True, False])
 def test_install(repo_manager, poetry_run, sync: bool, repo_name):
     # Arrange
@@ -158,7 +173,10 @@ def test_install(repo_manager, poetry_run, sync: bool, repo_name):
         assert is_system_env(env)
 
 
-@pytest.mark.parametrize("repo_name", [pytest.param("v1"), pytest.param("v2", marks=only_poetry_v2)])
+@pytest.mark.parametrize(
+    "repo_name",
+    [pytest.param("v1"), pytest.param("v1_v2lock", marks=only_poetry_v2), pytest.param("v2", marks=only_poetry_v2)],
+)
 def test_build(repo_manager, poetry_run, repo_name):
     # Arrange
     root_dir = repo_manager.get_repo(repo_name, preinstalled=False)
@@ -176,3 +194,29 @@ def test_build(repo_manager, poetry_run, repo_name):
     pkg_info_path = next((root_dir / "pkg_three" / "dist").rglob("PKG-INFO"))
     # Ensure extras are included
     assert "Requires-Dist: pkg-one[withfsspec] (==0.1.0)" in pkg_info_path.read_text()
+
+
+@pytest.mark.parametrize(
+    "repo_name",
+    [
+        pytest.param("v1"),
+        pytest.param("v1_v2lock", marks=only_poetry_v2),
+        pytest.param(
+            "v2", marks=[only_poetry_v2, pytest.mark.skip(reason="not working currently for PEP621 projects")]
+        ),
+    ],
+)
+def test_export(repo_manager, poetry_run, repo_name):
+    # Arrange
+    root_dir = repo_manager.get_repo(repo_name, preinstalled=False)
+
+    # Act
+    result = poetry_run(
+        root_dir, "pkg_three", "export --format requirements.txt --without-hashes --output requirements.txt"
+    )
+    requirements_txt = (root_dir / "pkg_three" / "requirements.txt").read_text()
+
+    assert result.exit_code == 0
+    assert len(requirements_txt.strip().split("\n")) == 2  # 2 packages in requirements.txt
+    assert "fsspec" in requirements_txt
+    assert "pkg-one" in requirements_txt

@@ -9,7 +9,7 @@
 **Main Features**:
 - Shared `poetry.lock` file across multiple projects in a monorepo
 - Shared virtual environment across multiple projects in a monorepo
-- Rewrite path dependencies during `poetry build`
+- Replace path dependencies during `poetry build` with pinned versions
 - Compatible with both Poetry v1 and v2
 
 ## Installation
@@ -55,7 +55,7 @@ library-two = { path = "../library-two", develop = true }
 [tool.poetry-monoranger-plugin]
 enabled = true
 monorepo-root = "../"
-version-rewrite-rule = '=='  # Choose between "==", "~", "^", ">=,<"
+version-pinning-rule = '=='  # Choose between "==", "~", "^", ">=,<"
 # ...
 ```
 The plugin by default is disabled in order to avoid having undesired consequences on other projects (as plugins are installed globally). To enable it, set `enabled = true` in each project's `pyproject.toml` file.
@@ -97,7 +97,7 @@ The plugin can be configured in the `pyproject.toml` file of each project. The f
 
 - `enabled` (bool): Whether the plugin is enabled for the current project. Default: `false`
 - `monorepo-root` (str): The path to the root of the monorepo. Default: `../`
-- `version-rewrite-rule` (str): The version rewrite rule to apply when building the project. Default: `==`
+- `version-pinning-rule` (str): The version pinning rule to apply when building the project. Default: `==`
 
 ## License
 This project is licensed under the Apache 2.0 license - see the [LICENSE](LICENSE) file for details.

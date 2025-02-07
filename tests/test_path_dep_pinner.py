@@ -7,25 +7,25 @@ from poetry.core.packages.directory_dependency import DirectoryDependency
 from poetry.core.pyproject.toml import PyProjectTOML
 
 from poetry_monoranger_plugin.config import MonorangerConfig
-from poetry_monoranger_plugin.path_rewriter import PathRewriter
+from poetry_monoranger_plugin.path_dep_pinner import PathDepPinner
 
 
 @pytest.mark.parametrize("disable_cache", [True, False])
-def test_executes_path_rewriting_for_build_command(mock_event_gen, disable_cache: bool):
+def test_executes_path_dep_pinning_for_build_command(mock_event_gen, disable_cache: bool):
     mock_event = mock_event_gen(BuildCommand, disable_cache=disable_cache)
     mock_command = mock_event.command
-    config = MonorangerConfig(enabled=True, monorepo_root="../", version_rewrite_rule="==")
-    path_rewriter = PathRewriter(config)
+    config = MonorangerConfig(enabled=True, monorepo_root="../", version_pinning_rule="==")
+    path_dep_pinner = PathDepPinner(config)
 
     original_dependencies = copy.deepcopy(mock_command.poetry.package.dependency_group.return_value.dependencies)
 
     with patch(
-        "poetry_monoranger_plugin.path_rewriter.PathRewriter._get_dependency_pyproject", autospec=True
+        "poetry_monoranger_plugin.path_dep_pinner.PathDepPinner._get_dependency_pyproject", autospec=True
     ) as mock_get_dep:
         mock_get_dep.return_value = Mock(spec=PyProjectTOML)
         mock_get_dep.return_value.poetry_config = {"version": "0.1.0", "name": "packageB"}
 
-        path_rewriter.execute(mock_event)
+        path_dep_pinner.execute(mock_event)
 
     new_dependencies = mock_command.poetry.package.dependency_group.return_value
 

@@ -22,6 +22,11 @@ from poetry.console.commands.self.self_command import SelfCommand
 from poetry.console.commands.update import UpdateCommand
 from poetry.plugins.application_plugin import ApplicationPlugin
 
+try:
+    from poetry_plugin_export.command import ExportCommand
+except ImportError:
+    ExportCommand = None
+
 from poetry_monoranger_plugin.config import MonorangerConfig
 
 if TYPE_CHECKING:
@@ -120,9 +125,14 @@ class Monoranger(ApplicationPlugin):
             adder_remover.execute(event)
 
         if isinstance(command, BuildCommand):
-            from poetry_monoranger_plugin.path_rewriter import PathRewriter
+            from poetry_monoranger_plugin.path_dep_pinner import PathDepPinner
 
-            PathRewriter(self.plugin_conf).execute(event)
+            PathDepPinner(self.plugin_conf).execute(event)
+
+        if ExportCommand is not None and isinstance(command, ExportCommand):
+            from poetry_monoranger_plugin.export_modifier import ExportModifier
+
+            ExportModifier(self.plugin_conf).execute(event)
 
     def post_console_command_event_listener(self, event: Event, event_name: str, dispatcher: EventDispatcher):
         """The event listener for console commands. This is executed after the command is run.
