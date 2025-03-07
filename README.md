@@ -93,7 +93,7 @@ Builds the **current** project, replacing editable path dependencies with the cu
 
 - `poetry export`:
 
-Export the requirements of the **current** project, replacing editable path dependencies with the current version of the packages. This is useful when exporting the requirements of a project that depends on another project in the monorepo, as it ensures that the exported requirements can be installed without expecting the other project to be present in a specific location.
+Export the requirements of the **current** project, replacing editable path dependencies with the current version of the packages. This is useful when exporting the requirements of a project that depends on another project in the monorepo, as it ensures that the exported requirements can be installed without expecting the other project to be present in a specific location. **NOTE: the plugin [`poetry-plugin-export`](https://github.com/python-poetry/poetry-plugin-export) must be installed for `poetry export` to work in more recent versions of Poetry.**
 
 ### Configuration
 The plugin can be configured in the `pyproject.toml` file of each project. The following options are available:
