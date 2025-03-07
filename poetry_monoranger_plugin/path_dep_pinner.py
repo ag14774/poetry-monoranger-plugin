@@ -132,7 +132,7 @@ class PathDepPinner:
         try:
             name = cast(str, dep_pyproject.poetry_config["name"])
             version = cast(str, dep_pyproject.poetry_config["version"])
-        except PyProjectError:
+        except (PyProjectError, KeyError):
             # Fallback to the project section since Poetry V2 also supports PEP 621 pyproject.toml files
             name = cast(str, dep_pyproject.data["project"]["name"])
             version = cast(str, dep_pyproject.data["project"]["version"])
